@@ -1,0 +1,3 @@
+[submodule "splatting"]
+	path = splatting
+	url = https://github.com/hperrot/splatting
