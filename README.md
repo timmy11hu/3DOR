@@ -1,1 +1,1 @@
-# 3DOR
+# In-N-Out: Lifting 2D Diffusion Prior for 3D Object Removal via Tuning-Free Latents Alignment
