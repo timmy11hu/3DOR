@@ -184,7 +184,6 @@ class NerfTrainer(Trainer):
                     if step < self.config.steps_reftrain:
                         self.reset_model()
 
-
                 if self.keep_update_inp and step >= self.config.steps_reftrain:
                     self.pipeline.inpaint_left_frames(step, self.base_dir)
                     self.keep_update_inp = False
