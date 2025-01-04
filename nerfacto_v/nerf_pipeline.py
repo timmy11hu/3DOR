@@ -184,15 +184,16 @@ class NerfPipeline(VanillaPipeline):
         patches_for_nerf = True
         if not self.use_patch:
             patch_list = []
-        elif not self.need_spherify and (step % self.config.steps_per_base == 0 or len(self.i_conf) == 1):
+        elif (step % self.config.steps_per_base == 0 or len(self.i_conf) == 1):
             patch_list = self.i_conf[:1]
         else:
-            if step % (self.config.steps_per_base-1) == 0:
-                patch_list = self.i_supp
-                patches_for_nerf = False
-            else:
-                # patches_for_nerf = False
-                patch_list = self.i_conf[1:]
+            patch_list = self.i_conf[1:]
+            # if step % (self.config.steps_per_base-1) == 0:
+            #     patch_list = self.i_supp
+            #     patches_for_nerf = False
+            # else:
+            #     # patches_for_nerf = False
+            #     patch_list = self.i_conf[1:]
 
         ray_bundles, batch = self.datamanager.next_train(step, patch_list=patch_list, patches_for_nerf=patches_for_nerf)
         model_outputs = {
@@ -577,7 +578,7 @@ class NerfPipeline(VanillaPipeline):
             mask_for_inp = cv2.morphologyEx(mask_for_inp, cv2.MORPH_CLOSE, kernel)
             mask_for_inp = scipy.ndimage.binary_dilation(mask_for_inp, structure=np.ones((kernel_size, kernel_size)), iterations=3)
 
-            depth_aligned = predict(np.stack([depth_to_inp]*3, axis=-1), mask_for_inp) / 255.
+            depth_aligned = predict_depths(np.stack([depth_to_inp]*3, axis=-1), mask_for_inp) / 255.
             depth_aligned = cv2.resize(depth_aligned[..., 0], dsize=(w, h), interpolation=cv2.INTER_LINEAR) * normalizer
 
             # bbox = mask2bbox(np.squeeze(mask).astype(int))
@@ -911,10 +912,11 @@ class NerfPipeline(VanillaPipeline):
             f.write(f'epoch: {step}, thres: {self.zt_std_threshold:0.2f}\n')
             f.write(' '.join(map(str, self.i_conf)) + '\n')
 
-        self.model.config.depth_loss_type = DepthLossType.URF
+        # self.model.config.depth_loss_type = DepthLossType.URF
         self.model.config.l1_loss_mult = self.config.lambda_patch
         self.model.config.vgg_loss_mult = self.config.lambda_patch
         self.model.config.adv_loss_mult = self.config.lambda_patch
+        self.model.config.depth_loss_mult *= self.config.steps_per_base
 
         # if self.need_spherify():
         #     self.model.config.l1_loss_mult = 1.0

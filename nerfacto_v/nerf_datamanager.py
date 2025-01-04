@@ -212,9 +212,6 @@ class NerfDataManager(VanillaDataManager):
             patch_batch = {"image": image_patch, "indices": patch_ray_indices, "mask": mask_patch}
             if depth_patch is not None:
                 patch_batch["depth_image"] = depth_patch
-                # delta = 2.
-                # patch_ray_bundle.nears = depth_patch.reshape(-1, 1).to(patch_ray_bundle.origins) - delta
-                # patch_ray_bundle.fars = depth_patch.reshape(-1, 1).to(patch_ray_bundle.origins) + 2
 
             ray_bundles["patches"] = patch_ray_bundle
             batch.update({"patches_" + k: v for k, v in patch_batch.items()})

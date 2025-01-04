@@ -72,7 +72,7 @@ class NerfModelConfig(DepthNerfactoModelConfig):
 
     depth_loss_mult: float = 0.01
 
-    tv_loss_mult: float = 0.001
+    # tv_loss_mult: float = 0.001
 
     # is_euclidean_depth: bool = False
     # """Whether input depth maps are Euclidean distances (or z-distances)."""
@@ -286,7 +286,7 @@ class NerfModel(DepthNerfactoModel):
         if self.collider is not None:
             ray_bundle = self.collider(ray_bundle)
             ray_bundle.nears = self.config.inference_near_plane * torch.ones_like(ray_bundle.camera_indices) # for clean purpose
-            print("model: currently clip near plane to ", self.config.inference_near_plane)
+            # print("model: currently clip near plane to ", self.config.inference_near_plane)
         # if not use_appearance:
         #     ray_bundle.camera_indices = None
         # else:
@@ -676,14 +676,13 @@ class NerfModel(DepthNerfactoModel):
                 # loss_dict["depth_loss"] = self.config.depth_loss_mult * metrics_dict["depth_loss"]
                 # loss_dict["depth_ranking"] = (self.config.depth_loss_mult * 0.1 * np.interp(self.step, [0, 2000], [0, 0.2]) * metrics_dict["depth_ranking"])
 
-            patch_size = outputs["patch_size"]
-            fake_depth = outputs[compute_on + "_expected_depth"].to(self.device).reshape(patch_size, patch_size, 1)
+            # patch_size = outputs["patch_size"]
+            # fake_depth = outputs[compute_on + "_expected_depth"].to(self.device).reshape(patch_size, patch_size, 1)
 
-            w_variance = torch.mean(torch.pow(fake_depth[:, :-1] - fake_depth[:, 1:], 2))
-            h_variance = torch.mean(torch.pow(fake_depth[:-1, :] - fake_depth[1:, :], 2))
-            tv_loss = h_variance + w_variance
-            loss_dict["depth_tv_loss"] = self.config.tv_loss_mult * tv_loss
-
+            # w_variance = torch.mean(torch.pow(fake_depth[:, :-1] - fake_depth[:, 1:], 2))
+            # h_variance = torch.mean(torch.pow(fake_depth[:-1, :] - fake_depth[1:, :], 2))
+            # tv_loss = h_variance + w_variance
+            # loss_dict["depth_tv_loss"] = self.config.tv_loss_mult * tv_loss
             if "patches_depth_image" in batch.keys() and self.config.depth_loss_mult > 0.:
                 if self.config.depth_loss_type == DepthLossType.DS_NERF:
                     metrics_dict["depth_loss"] = 0.0
@@ -704,7 +703,7 @@ class NerfModel(DepthNerfactoModel):
                             is_euclidean=self.config.is_euclidean_depth,
                             depth_loss_type=self.config.depth_loss_type,
                         ) / len(outputs[compute_on + "_weights_list"])
-                    loss_dict["depth_loss"] = 0.1 * self.config.depth_loss_mult * metrics_dict["depth_loss"]
+                    loss_dict["depth_loss"] = self.config.depth_loss_mult * metrics_dict["depth_loss"]
                 elif self.config.depth_loss_type == DepthLossType.URF:
                     real_depth = batch[compute_on + "_depth_image"].to(self.device).reshape(patch_size, patch_size, 1)
                     mask_dpt = torch.rand_like(batch[compute_on + '_mask'].float().to(self.device).reshape(patch_size, patch_size, 1)) < 0.2
@@ -762,8 +761,8 @@ class NerfModel(DepthNerfactoModel):
 
         images_dict = {
             "rgb": outputs["rgb"],
-            "real": gt_rgb, 
-            "img": combined_rgb, 
+            "real": gt_rgb,
+            "img": combined_rgb,
             "accumulation": combined_acc,
             "depth": combined_depth}
 
