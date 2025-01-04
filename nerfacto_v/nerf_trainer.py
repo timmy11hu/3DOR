@@ -61,8 +61,7 @@ class NerfTrainerConfig(TrainerConfig):
     save_only_latest_checkpoint: bool = False
     steps_per_video: int = 2000
     steps_pretrain: int = 5000
-    steps_reftrain: int = 10000
-    steps_progtrain: int = 20000
+    steps_reftrain: int = 6000
     steps_per_train_image: int = 1000,
     steps_per_eval_image: int = 1000,
 
@@ -159,7 +158,9 @@ class NerfTrainer(Trainer):
                     )
 
                 # if step_check(step, self.config.steps_per_save) and step <= self.config.steps_reftrain:
-                if step == self.config.steps_pretrain or step == self.config.steps_reftrain:
+                if step == self.config.steps_pretrain:
+                    self.save_checkpoint(step)
+                if (step >= self.config.steps_reftrain and step_check(step, self.config.steps_per_save)):
                     self.save_checkpoint(step)
 
                 if step_check(step, self.config.steps_per_video):
