@@ -66,7 +66,6 @@ prompt_dict = {
     "plant": "a white pot centered on a patterned tablecloth, photorealistic 8k",
     "cup":  "A golden cup, photorealistic 8k",
     "toy": "Bottom of a white clay toy, photorealistic 8k"
-
 }
 
 train_test_split = {"paper": 75,

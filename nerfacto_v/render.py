@@ -535,9 +535,9 @@ class RenderSpiral(BaseRender):
 
 
     def render(self, pipeline, base_dir, step_num,
-               seconds: float = 3.0,
+               seconds: float = 6.0,
                output_format: Literal["images", "video"] = "video",
-               frame_rate: int = 18) -> None:
+               frame_rate: int = 24) -> None:
         pipeline.eval()
 
         if pipeline.need_spherify():
@@ -590,7 +590,7 @@ class RenderSpiral(BaseRender):
             camera_path,
             output_filename=Path(f"{base_dir}/{step_num:05d}/{self.output_path}"),
             # rendered_output_names=self.rendered_output_names,
-            rendered_output_names=['rgb', "expected_depth"],
+            rendered_output_names=['rgb'],
             # rendered_output_names=['rgb', "visibility", "depth", "expected_depth"],
             rendered_resolution_scaling_factor=1.0 / self.downscale_factor,
             seconds=seconds,
