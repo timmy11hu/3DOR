@@ -425,8 +425,8 @@ def _get_spiral_path(
     steps: int = 30,
     radius: Optional[float] = None,
     radiuses: Optional[Tuple[float]] = None,
-    rots: int = 1,
-    zrate: float = 0.5,
+    rots: int = 2,
+    zrate: float = 0.2,
 ) -> Cameras:
     assert radius is not None or radiuses is not None, "Either radius or radiuses must be specified."
     assert camera.ndim == 1, "We assume only one batch dim here"
@@ -537,7 +537,7 @@ class RenderSpiral(BaseRender):
     def render(self, pipeline, base_dir, step_num,
                seconds: float = 6.0,
                output_format: Literal["images", "video"] = "video",
-               frame_rate: int = 24) -> None:
+               frame_rate: int = 18) -> None:
         pipeline.eval()
 
         if pipeline.need_spherify():
